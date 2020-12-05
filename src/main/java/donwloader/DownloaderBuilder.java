@@ -1,39 +1,59 @@
 package donwloader;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@Component
+@Scope("prototype")
 public class DownloaderBuilder {
+    @Autowired
+    private Downloader downloader;
+
     private String fileFrom;
     private String strDestination;
 
     private URL urlFileFrom;
     private File fileDestination;
 
-    public DownloaderBuilder(String strDestination, String fileFrom) {
+    public DownloaderBuilder setFileFrom(String fileFrom) {
         this.fileFrom = fileFrom;
-        this.strDestination = strDestination;
+
+        return this;
     }
 
-    public static Donwloader getDownloader(String fileFrom, String destination) throws IOException {
-        return new DownloaderBuilder(fileFrom, destination)
+    public DownloaderBuilder setStrDestination(String strDestination) {
+        this.strDestination = strDestination;
+
+        return this;
+    }
+
+    public Downloader getDownloader(String strDestination, String fileFrom) throws IOException {
+        return this.setFileFrom(fileFrom)
+                .setStrDestination(strDestination)
                 .createFileFromUrl()
                 .createDestinationDirectory()
                 .createDestionationUnicFile()
                 .build();
     }
 
-    private Donwloader build() throws IOException {
+    private Downloader build() throws IOException {
         if (this.urlFileFrom == null) {
             throw new IOException("urlFileFrom is empty");
         } else if (this.fileDestination == null) {
-            throw new IOException("fileDestination  is empty");
+            throw new IOException("fileDestination is empty");
         } else {
-            return new Donwloader(this.fileDestination, this.urlFileFrom);
+            //return new Downloader(this.fileDestination, this.urlFileFrom);
+            this.downloader.setFileDestination(this.fileDestination);
+            this.downloader.setUrlFileFrom(this.urlFileFrom);
+            return this.downloader;
         }
     }
 

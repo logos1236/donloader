@@ -1,11 +1,21 @@
 package donwloader;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+@Component
+@Scope("prototype")
 public class DownloadManager implements IDownloader {
+    @Autowired
+    DownloaderBuilder downloaderBuilder;
+
     private Semaphore semaphore;
 
     public DownloadManager(int streamCount) {
@@ -15,8 +25,10 @@ public class DownloadManager implements IDownloader {
     public void download(String fileDestination, String fileFrom) {
         try {
             this.semaphore.acquire();
-            Donwloader donwloader = DownloaderBuilder.getDownloader(fileDestination, fileFrom);
-            new Thread(donwloader).start();
+            /*Downloader downloader = context.getBean(DownloaderBuilder.class)
+                    .getDownloader(fileDestination, fileFrom);*/
+            Downloader downloader = downloaderBuilder.getDownloader(fileDestination, fileFrom);
+            new Thread(downloader).start();
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         } finally {
