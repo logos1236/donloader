@@ -1,4 +1,4 @@
-package donwloader.view;
+package ru.armishev.view;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

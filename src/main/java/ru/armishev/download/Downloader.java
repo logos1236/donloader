@@ -1,6 +1,6 @@
-package donwloader;
+package ru.armishev.download;
 
-import donwloader.view.ViewDownload;
+import ru.armishev.view.ViewDownload;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import java.net.URL;
 
 @Component
 @Scope("prototype")
-public class Downloader {
+public class Downloader implements IDownloader {
     private URL urlFileFrom;
     private File fileDestination;
     private static int connectionTimeout = 1000;
@@ -26,6 +26,7 @@ public class Downloader {
     }
 
     @ViewDownload
+    @Override
     public void startDownload() {
         try {
             FileUtils.copyURLToFile(

@@ -1,4 +1,4 @@
-package donwloader;
+package ru.armishev.download;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -12,7 +12,7 @@ import java.util.concurrent.Semaphore;
 
 @Component
 @Scope("prototype")
-public class DownloadManager implements IDownloader {
+public class DownloadManager implements IDownloadManager {
     @Autowired
     ApplicationContext context;
 
@@ -51,7 +51,7 @@ public class DownloadManager implements IDownloader {
         public void run() {
             try {
                 DownloadManager.this.semaphore.acquire();
-                Downloader downloader = context.getBean(DownloaderBuilder.class).getDownloader(fileDestination, fileFrom);
+                IDownloader downloader = context.getBean(DownloaderBuilder.class).getDownloader(fileDestination, fileFrom);
                 downloader.startDownload();
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();

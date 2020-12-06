@@ -1,8 +1,7 @@
-package donwloader;
+package ru.armishev.download;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,7 @@ import java.net.URL;
 @Scope("prototype")
 public class DownloaderBuilder {
     @Autowired
-    private Downloader downloader;
+    private IDownloader downloader;
 
     private String fileFrom;
     private String strDestination;
@@ -35,7 +34,7 @@ public class DownloaderBuilder {
         return this;
     }
 
-    public Downloader getDownloader(String strDestination, String fileFrom) throws IOException {
+    public IDownloader getDownloader(String strDestination, String fileFrom) throws IOException {
         return this.setFileFrom(fileFrom)
                 .setStrDestination(strDestination)
                 .createFileFromUrl()
@@ -44,13 +43,12 @@ public class DownloaderBuilder {
                 .build();
     }
 
-    private Downloader build() throws IOException {
+    private IDownloader build() throws IOException {
         if (this.urlFileFrom == null) {
             throw new IOException("urlFileFrom is empty");
         } else if (this.fileDestination == null) {
             throw new IOException("fileDestination is empty");
         } else {
-            //return new Downloader(this.fileDestination, this.urlFileFrom);
             this.downloader.setFileDestination(this.fileDestination);
             this.downloader.setUrlFileFrom(this.urlFileFrom);
             return this.downloader;

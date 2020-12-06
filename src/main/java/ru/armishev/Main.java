@@ -1,9 +1,10 @@
-package donwloader;
+package ru.armishev;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.armishev.download.DownloadManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,6 @@ public class Main {
         SpringApplication.run(Main.class, args);
         ApplicationContext context = new AnnotationConfigApplicationContext(Main.class);
 
-
         Set<String> urlList = new HashSet<>();
         urlList.add("https://www.ecomagazine.com/images/Newsletter/0_2019/Week_11-18-19/birdseyeview_ocean.jpg");
         urlList.add("https://www.aljazeera.com/wp-content/uploads/2019/06/5f77ac61d2ab4d6a86e1aa0b110179c8_18.jpeg");
@@ -23,7 +23,7 @@ public class Main {
         String fileDestination = "/home/logos/Java/downloader/src/main/resources/download_files/";
 
         DownloadManager downloadManager = context.getBean(DownloadManager.class);
-        downloadManager.setStreamCount(1);
+        downloadManager.setStreamCount(2);
         downloadManager.download(fileDestination, urlList);
     }
 }
