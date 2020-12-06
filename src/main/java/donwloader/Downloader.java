@@ -11,7 +11,7 @@ import java.net.URL;
 
 @Component
 @Scope("prototype")
-public class Downloader implements Runnable {
+public class Downloader {
     private URL urlFileFrom;
     private File fileDestination;
     private static int connectionTimeout = 1000;
@@ -25,9 +25,8 @@ public class Downloader implements Runnable {
         this.fileDestination = fileDestination;
     }
 
-    @Override
     @ViewDownload
-    public void run() {
+    public void startDownload() {
         try {
             FileUtils.copyURLToFile(
                     urlFileFrom,

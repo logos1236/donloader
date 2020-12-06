@@ -14,26 +14,16 @@ import java.util.concurrent.Semaphore;
 @Scope("prototype")
 public class DownloadManager implements IDownloader {
     @Autowired
-    DownloaderBuilder downloaderBuilder;
+    ApplicationContext context;
 
-    private Semaphore semaphore;
+    private Semaphore semaphore = new Semaphore(1);
 
-    public DownloadManager(int streamCount) {
+    public void setStreamCount(int streamCount) {
         this.semaphore = new Semaphore(streamCount);
     }
 
     public void download(String fileDestination, String fileFrom) {
-        try {
-            this.semaphore.acquire();
-            /*Downloader downloader = context.getBean(DownloaderBuilder.class)
-                    .getDownloader(fileDestination, fileFrom);*/
-            Downloader downloader = downloaderBuilder.getDownloader(fileDestination, fileFrom);
-            new Thread(downloader).start();
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-        } finally {
-            this.semaphore.release();
-        }
+        new Thread(new DownloadManagerThread(fileDestination, fileFrom)).start();
     }
 
     public void download(String fileDestination, String... url) {
@@ -45,6 +35,29 @@ public class DownloadManager implements IDownloader {
     public void download(String fileDestination, Set<String> url) {
         if (!url.isEmpty()) {
             url.stream().forEach(x->{download(fileDestination, x);});
+        }
+    }
+
+    private class DownloadManagerThread implements Runnable {
+        private String fileDestination;
+        private String fileFrom;
+
+        public DownloadManagerThread(String fileDestination, String fileFrom) {
+            this.fileDestination = fileDestination;
+            this.fileFrom = fileFrom;
+        }
+
+        @Override
+        public void run() {
+            try {
+                DownloadManager.this.semaphore.acquire();
+                Downloader downloader = context.getBean(DownloaderBuilder.class).getDownloader(fileDestination, fileFrom);
+                downloader.startDownload();
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+            } finally {
+                DownloadManager.this.semaphore.release();
+            }
         }
     }
 }
