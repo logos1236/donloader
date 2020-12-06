@@ -84,7 +84,10 @@ public class DownloaderBuilder {
             changerFileName.append(changerFileNamePart);
             tmpFileName = new File(new StringBuilder(fileNameBuilder).append(changerFileName).append(".").append(destinationFileExtension).toString());
         }
-        tmpFileName.createNewFile();
+
+        if (!tmpFileName.createNewFile()) {
+            throw new IOException("Can't create file");
+        }
 
         this.fileDestination = tmpFileName;
 
