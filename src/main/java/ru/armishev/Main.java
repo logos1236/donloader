@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.armishev.download.DownloadManager;
 
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,9 @@ public class Main {
         urlList.add("https://www.aljazeera.com/wp-content/uploads/2019/06/5f77ac61d2ab4d6a86e1aa0b110179c8_18.jpeg");
         urlList.add("https://unctad.org/sites/default/files/inline-images/2020-06-08_World-Oceans-Day_400x196.jpg");
 
-        String fileDestination = "/home/logos/Java/downloader/src/main/resources/download_files/";
+
+        String absolutePath = Paths.get("src","main","resources").toAbsolutePath().toString();
+        String fileDestination = absolutePath+"/download_files/";
 
         DownloadManager downloadManager = context.getBean(DownloadManager.class);
         downloadManager.setStreamCount(2);
