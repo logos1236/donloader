@@ -3,6 +3,7 @@ package ru.armishev.download;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.concurrent.Semaphore;
 @Scope("prototype")
 public class DownloadManager implements IDownloadManager {
     @Autowired
-    ApplicationContext context;
+    private DownloaderBuilder downloaderBuilder;
 
     private Semaphore semaphore = new Semaphore(1);
 
@@ -38,7 +39,7 @@ public class DownloadManager implements IDownloadManager {
         }
     }
 
-    private class DownloadManagerThread implements Runnable {
+    public class DownloadManagerThread implements Runnable {
         private String fileDestination;
         private String fileFrom;
 
@@ -50,13 +51,13 @@ public class DownloadManager implements IDownloadManager {
         @Override
         public void run() {
             try {
-                DownloadManager.this.semaphore.acquire();
-                IDownloader downloader = context.getBean(DownloaderBuilder.class).getDownloader(fileDestination, fileFrom);
+                semaphore.acquire();
+                IDownloader downloader = downloaderBuilder.getDownloader(fileDestination, fileFrom);
                 downloader.startDownload();
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             } finally {
-                DownloadManager.this.semaphore.release();
+                semaphore.release();
             }
         }
     }

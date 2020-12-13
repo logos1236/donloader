@@ -3,6 +3,7 @@ package ru.armishev.download;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 @Component
-@Scope("prototype")
+@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DownloaderBuilder {
     @Autowired
     private IDownloader downloader;
