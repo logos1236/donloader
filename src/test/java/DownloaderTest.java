@@ -23,10 +23,11 @@ public class DownloaderTest {
         urlList.add("https://unctad.org/sites/default/files/inline-images/2020-06-08_World-Oceans-Day_400x196.jpg");
 
 
-        String absolutePath = Paths.get("src","main","resources").toAbsolutePath().toString();
+        String absolutePath = Paths.get("src","test","resources").toAbsolutePath().toString();
         String fileDestination = absolutePath+"/download_files/";
 
         downloadManager.setStreamCount(2);
         downloadManager.download(fileDestination, urlList);
+
     }
 }

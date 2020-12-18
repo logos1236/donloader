@@ -1,5 +1,6 @@
 package ru.armishev.download;
 
+import org.springframework.context.annotation.ScopedProxyMode;
 import ru.armishev.view.ViewDownload;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
@@ -11,7 +12,7 @@ import java.net.URL;
 import java.nio.file.Files;
 
 @Component
-@Scope("prototype")
+@Scope(value = "prototype")
 public class Downloader implements IDownloader {
     private URL urlFileFrom;
     private File fileDestination;
@@ -26,7 +27,6 @@ public class Downloader implements IDownloader {
         this.fileDestination = fileDestination;
     }
 
-    @ViewDownload
     @Override
     public void startDownload() {
         boolean clearFile = false;

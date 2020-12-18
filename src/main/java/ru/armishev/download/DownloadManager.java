@@ -3,7 +3,6 @@ package ru.armishev.download;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -15,7 +14,7 @@ import java.util.concurrent.Semaphore;
 @Scope("prototype")
 public class DownloadManager implements IDownloadManager {
     @Autowired
-    private DownloaderBuilder downloaderBuilder;
+    private ApplicationContext context;
 
     private Semaphore semaphore = new Semaphore(1);
 
@@ -24,7 +23,12 @@ public class DownloadManager implements IDownloadManager {
     }
 
     public void download(String fileDestination, String fileFrom) {
-        new Thread(new DownloadManagerThread(fileDestination, fileFrom)).start();
+        try {
+            DownloadManagerThread downloadManagerThread = context.getBean(DownloadManagerThread.class);
+            new Thread(downloadManagerThread.initDownloader(fileDestination, fileFrom, semaphore)).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void download(String fileDestination, String... url) {
@@ -36,29 +40,6 @@ public class DownloadManager implements IDownloadManager {
     public void download(String fileDestination, Set<String> url) {
         if (!url.isEmpty()) {
             url.stream().forEach(x->{download(fileDestination, x);});
-        }
-    }
-
-    public class DownloadManagerThread implements Runnable {
-        private String fileDestination;
-        private String fileFrom;
-
-        public DownloadManagerThread(String fileDestination, String fileFrom) {
-            this.fileDestination = fileDestination;
-            this.fileFrom = fileFrom;
-        }
-
-        @Override
-        public void run() {
-            try {
-                semaphore.acquire();
-                IDownloader downloader = downloaderBuilder.getDownloader(fileDestination, fileFrom);
-                downloader.startDownload();
-            } catch (InterruptedException | IOException e) {
-                e.printStackTrace();
-            } finally {
-                semaphore.release();
-            }
         }
     }
 }
