@@ -28,6 +28,7 @@ public class Downloader implements IDownloader {
     }
 
     @Override
+    @ViewDownload
     public void startDownload() {
         boolean clearFile = false;
 

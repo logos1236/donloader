@@ -99,8 +99,6 @@ public class DownloadManagerThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(this+": "+semaphore+fileFrom+fileDestination);
-
         try {
             semaphore.acquire();
             downloader.startDownload();
