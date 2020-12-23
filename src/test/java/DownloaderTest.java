@@ -5,9 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.armishev.Main;
 import ru.armishev.download.DownloadManager;
 import ru.armishev.download.Downloader;
 
@@ -29,12 +33,16 @@ public class DownloaderTest {
         urlList.add("https://www.aljazeera.com/wp-content/uploads/2019/06/5f77ac61d2ab4d6a86e1aa0b110179c8_18.jpeg");
         urlList.add("https://unctad.org/sites/default/files/inline-images/2020-06-08_World-Oceans-Day_400x196.jpg");
     }
-    static String absolutePath = Paths.get("src","test","resources").toAbsolutePath().toString();
-    static String strDestination =  absolutePath+"/download_files/";
-    static File fileDestination =  new File(absolutePath+"/download_files/");
+    static String strDestination =  Paths.get("src","test","resources", "download_files").toAbsolutePath().toString();
+    static File fileDestination =  new File(strDestination);
 
     @Autowired
     private DownloadManager downloadManager;
+
+    @Value("${logging.file.name}")
+    private String test;
+
+    static final Logger log = LoggerFactory.getLogger(DownloaderTest.class);
 
     @Before
     @After
@@ -77,5 +85,32 @@ public class DownloaderTest {
         });
 
         Assert.assertEquals(0, fileDestination.list().length);
+    }
+
+    @Test
+    public void downloadTwoFilesWithSameName() {
+        String urlDownload = "https://unctad.org/sites/default/files/inline-images/2020-06-08_World-Oceans-Day_400x196.jpg";
+
+        downloadManager.download(strDestination, urlDownload);
+        downloadManager.download(strDestination, urlDownload);
+
+        Assert.assertEquals(2, fileDestination.list().length);
+    }
+
+    @Test
+    public void downloadFilesToClosedDir() {
+        String urlDownload = "https://unctad.org/sites/default/files/inline-images/2020-06-08_World-Oceans-Day_400x196.jpg";
+        String closedStrDestination =  Paths.get("src","test","resources", "cant_write").toAbsolutePath().toString();
+
+        Assertions.assertDoesNotThrow(() -> {
+            downloadManager.download(closedStrDestination, urlDownload);
+        });
+    }
+
+    @Test
+    public void testLog() {
+        System.out.println(test);
+
+        log.error("3434");
     }
 }

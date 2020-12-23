@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 /src/main/resources/download_files
 /src/test/resources/download_files
+/src/test/resources/cant_write
 
 ### STS ###
 .apt_generated
@@ -34,3 +35,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Log ###
+*.log

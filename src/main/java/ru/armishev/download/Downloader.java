@@ -1,6 +1,10 @@
 package ru.armishev.download;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ScopedProxyMode;
+import ru.armishev.Main;
 import ru.armishev.view.ViewDownload;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +23,8 @@ public class Downloader implements IDownloader {
     private static int connectionTimeout = 1000;
     private static int readTimeout = 1000;
 
+    static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public void setUrlFileFrom(URL urlFileFrom) {
         this.urlFileFrom = urlFileFrom;
     }
@@ -27,10 +33,15 @@ public class Downloader implements IDownloader {
         this.fileDestination = fileDestination;
     }
 
+    @Value("${logging.file.name}")
+    private String test;
+
     @Override
     @ViewDownload
     public void startDownload() {
         boolean clearFile = false;
+
+        System.out.println(test);
 
         try {
             FileUtils.copyURLToFile(
@@ -40,14 +51,14 @@ public class Downloader implements IDownloader {
                     readTimeout);
         } catch (IOException e) {
             clearFile = true;
-            e.printStackTrace();
+            //log.error(e.getMessage(), e);
         }
 
         if (clearFile) {
             try {
                 Files.deleteIfExists(fileDestination.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
     }

@@ -1,5 +1,8 @@
 package ru.armishev.view;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.armishev.Main;
 import ru.armishev.download.Downloader;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
@@ -13,6 +16,8 @@ import java.lang.reflect.Field;
 @Aspect
 @Component
 public class ViewData {
+    static final Logger log = LoggerFactory.getLogger(Main.class);
+
     @Pointcut("@annotation(ru.armishev.view.ViewDownload)")
     public void callAtDownload() { }
 
@@ -23,9 +28,9 @@ public class ViewData {
             Field urlFileFromField = Downloader.class.getDeclaredField("urlFileFrom");
             urlFileFromField.setAccessible(true);
 
-            System.out.println("Before "+urlFileFromField.get(targetObject));
+            log.info("Before "+urlFileFromField.get(targetObject));
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -36,9 +41,9 @@ public class ViewData {
             Field urlFileFromField = Downloader.class.getDeclaredField("urlFileFrom");
             urlFileFromField.setAccessible(true);
 
-            System.out.println("After "+urlFileFromField.get(targetObject));
+            log.info("After "+urlFileFromField.get(targetObject));
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 }

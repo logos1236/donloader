@@ -1,5 +1,6 @@
 package ru.armishev;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -25,9 +26,7 @@ public class Main {
         urlList.add("https://www.aljazeera.com/wp-content/uploads/2019/06/5f77ac61d2ab4d6a86e1aa0b110179c8_18.jpeg");
         urlList.add("https://unctad.org/sites/default/files/inline-images/2020-06-08_World-Oceans-Day_400x196.jpg");
 
-
-        String absolutePath = Paths.get("src","main","resources").toAbsolutePath().toString();
-        String fileDestination = absolutePath+"/download_files/";
+        String fileDestination = Paths.get("src","main","resources", "download_files").toAbsolutePath().toString();
 
         DownloadManager downloadManager = context.getBean(DownloadManager.class);
         downloadManager.setStreamCount(2);

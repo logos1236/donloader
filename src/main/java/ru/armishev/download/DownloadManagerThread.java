@@ -1,10 +1,13 @@
 package ru.armishev.download;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import ru.armishev.Main;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +24,8 @@ public class DownloadManagerThread implements Runnable {
     private Semaphore semaphore;
     private URL fileFrom;
     private File fileDestination;
+
+    static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public DownloadManagerThread initDownloader(String strDestination, String fileFrom, Semaphore semaphore) throws IOException {
         return this
@@ -103,7 +108,7 @@ public class DownloadManagerThread implements Runnable {
             semaphore.acquire();
             downloader.startDownload();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } finally {
             semaphore.release();
         }

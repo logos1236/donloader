@@ -1,9 +1,14 @@
 package ru.armishev.download;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import ru.armishev.Main;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,11 +17,14 @@ import java.util.concurrent.Semaphore;
 
 @Component
 @Scope("prototype")
+@PropertySource("classpath:application-test.properties")
 public class DownloadManager implements IDownloadManager {
     @Autowired
     private ApplicationContext context;
 
     private Semaphore semaphore = new Semaphore(1);
+
+    static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public void setStreamCount(int streamCount) {
         this.semaphore = new Semaphore(streamCount);
@@ -27,7 +35,7 @@ public class DownloadManager implements IDownloadManager {
             DownloadManagerThread downloadManagerThread = context.getBean(DownloadManagerThread.class);
             new Thread(downloadManagerThread.initDownloader(fileDestination, fileFrom, semaphore)).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 
